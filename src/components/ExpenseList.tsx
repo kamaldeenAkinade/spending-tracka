@@ -1,6 +1,11 @@
+import { FixedSizeList } from 'react-window';
+import type { ListChildComponentProps } from 'react-window';
 import type { Expense } from '../types';
-import { CATEGORY_COLORS, CATEGORY_LABELS } from '../types';
+import { CATEGORY_COLORS, CATEGORY_LABELS, formatAmount } from '../types';
 import { formatDisplayDate } from '../dateUtils';
+
+const ROW_HEIGHT = 50;
+const MAX_VISIBLE_ROWS = 10;
 
 interface Props {
   expenses: Expense[];
@@ -9,48 +14,50 @@ interface Props {
 
 export default function ExpenseList({ expenses, onDelete }: Props) {
   if (expenses.length === 0) {
-    return (
-      <div className="text-center py-10 text-gray-500 text-sm">
-        No expenses to show
-      </div>
-    );
+    return <div className="expense-empty">No expenses to show</div>;
   }
 
+  const listHeight = Math.min(expenses.length * ROW_HEIGHT, MAX_VISIBLE_ROWS * ROW_HEIGHT);
+
   return (
-    <div className="flex flex-col gap-2">
-      {expenses.map((e) => (
-        <div
-          key={e.id}
-          className="flex items-center gap-3 bg-[#1a1a24] border border-[#2a2a38] rounded-xl px-4 py-3 group"
-        >
-          <span
-            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-            style={{ backgroundColor: CATEGORY_COLORS[e.category] }}
-          />
-          <span
-            className="text-xs font-medium px-2 py-0.5 rounded-md flex-shrink-0"
-            style={{
-              backgroundColor: `${CATEGORY_COLORS[e.category]}22`,
-              color: CATEGORY_COLORS[e.category],
-            }}
-          >
-            {CATEGORY_LABELS[e.category]}
-          </span>
-          <span className="text-gray-400 text-sm flex-shrink-0">
-            {formatDisplayDate(e.date)}
-          </span>
-          <span className="ml-auto font-semibold text-white">
-            ₦{e.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span>
-          <button
-            onClick={() => onDelete(e.id)}
-            className="ml-2 text-gray-600 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 text-lg leading-none"
-            title="Delete"
-          >
-            ×
-          </button>
-        </div>
-      ))}
-    </div>
+    <FixedSizeList
+      height={listHeight}
+      width="100%"
+      itemCount={expenses.length}
+      itemSize={ROW_HEIGHT}
+      style={{ outline: 'none' }}
+    >
+      {({ index, style }: ListChildComponentProps) => {
+        const e = expenses[index];
+        return (
+          <div style={{ ...style, paddingBottom: 6 }}>
+            <div className="expense-row">
+              <span
+                className="expense-dot"
+                style={{ backgroundColor: CATEGORY_COLORS[e.category] }}
+              />
+              <span
+                className="expense-badge"
+                style={{
+                  backgroundColor: `${CATEGORY_COLORS[e.category]}1f`,
+                  color: CATEGORY_COLORS[e.category],
+                }}
+              >
+                {CATEGORY_LABELS[e.category]}
+              </span>
+              <span className="expense-date">{formatDisplayDate(e.date)}</span>
+              <span className="expense-amount">{formatAmount(e.amount)}</span>
+              <button
+                className="expense-delete"
+                onClick={() => onDelete(e.id)}
+                title="Delete"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        );
+      }}
+    </FixedSizeList>
   );
 }

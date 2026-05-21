@@ -1,95 +1,156 @@
-import { useState } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useExpenses } from './useExpenses';
-import { filterExpensesByRange, thisWeekTotal } from './dateUtils';
+import { filterExpensesByRange } from './dateUtils';
 import AddExpense from './components/AddExpense';
 import CategoryChart from './components/CategoryChart';
 import DailyChart from './components/DailyChart';
 import ExpenseList from './components/ExpenseList';
 import FilterTabs from './components/FilterTabs';
-import type { FilterRange } from './types';
+import type { Expense, FilterRange } from './types';
+import { formatAmount } from './types';
 
 export default function App() {
-  const { expenses, addExpense, deleteExpense } = useExpenses();
+  const { expenses, addExpense, deleteExpense, restoreExpense, saveError } = useExpenses();
   const [filter, setFilter] = useState<FilterRange>('this-week');
+  const [undoItem, setUndoItem] = useState<Expense | null>(null);
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const filtered = filterExpensesByRange(expenses, filter);
-  const weekTotal = thisWeekTotal(expenses);
-  const filteredTotal = filtered.reduce((sum, e) => sum + e.amount, 0);
+  const filtered = useMemo(
+    () => filterExpensesByRange(expenses, filter),
+    [expenses, filter]
+  );
+
+  const filteredTotal = useMemo(
+    () => filtered.reduce((sum, e) => sum + e.amount, 0),
+    [filtered]
+  );
+
+  const weekTotal = useMemo(
+    () => filter === 'this-week'
+      ? filteredTotal
+      : filterExpensesByRange(expenses, 'this-week').reduce((sum, e) => sum + e.amount, 0),
+    [expenses, filter, filteredTotal]
+  );
+
+  function handleDelete(id: string) {
+    const deleted = deleteExpense(id);
+    if (!deleted) return;
+    setUndoItem(deleted);
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+    undoTimer.current = setTimeout(() => setUndoItem(null), 5000);
+  }
+
+  function handleUndo() {
+    if (!undoItem) return;
+    restoreExpense(undoItem);
+    setUndoItem(null);
+    if (undoTimer.current) clearTimeout(undoTimer.current);
+  }
+
+  useEffect(() => () => { if (undoTimer.current) clearTimeout(undoTimer.current); }, []);
+
+  function handleExport() {
+    const blob = new Blob([JSON.stringify(expenses, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `receipts-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   return (
-    <div className="min-h-screen bg-[#0f0f13] text-white">
-      {/* Header */}
-      <header className="border-b border-[#2a2a38] px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center text-sm font-bold">
-              R
-            </div>
-            <h1 className="text-xl font-bold text-white">Receipts</h1>
+    <div className="app">
+      {saveError && (
+        <div className="save-error-banner">
+          Storage unavailable — expenses entered this session will not be saved.
+        </div>
+      )}
+
+      <header className="app-header">
+        <div className="app-header-inner">
+          <div className="logo">
+            <div className="logo-mark">R</div>
+            <span className="logo-name">Receipts</span>
           </div>
-          <span className="text-sm text-gray-400">{expenses.length} expense{expenses.length !== 1 ? 's' : ''}</span>
+          <div className="header-actions">
+            <span className="header-count">
+              {expenses.length} expense{expenses.length !== 1 ? 's' : ''}
+            </span>
+            {expenses.length > 0 && (
+              <button className="btn-export" onClick={handleExport}>Export</button>
+            )}
+          </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-8">
-          {/* Left column: Add form + this week total */}
-          <div className="flex flex-col gap-6">
-            {/* This week total card */}
-            <div className="bg-gradient-to-br from-violet-600/20 to-purple-900/10 border border-violet-500/20 rounded-2xl p-6">
-              <p className="text-sm text-violet-300 mb-1">This week's spend</p>
-              <p className="text-3xl font-bold text-white">
-                ₦{weekTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </p>
+      <main className="app-main">
+        <div className="app-grid">
+          <div className="col-left">
+            <div className="card">
+              <p className="week-label">This week's spend</p>
+              <p className="week-amount">{formatAmount(weekTotal)}</p>
             </div>
-
             <AddExpense onAdd={addExpense} />
           </div>
 
-          {/* Right column: Charts + list */}
-          <div className="flex flex-col gap-6">
-            {/* Filter tabs */}
-            <FilterTabs value={filter} onChange={setFilter} />
-
-            {/* Stats row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-[#1a1a24] border border-[#2a2a38] rounded-2xl p-5">
-                <p className="text-xs text-gray-400 uppercase tracking-wide mb-2">Total Spent</p>
-                <p className="text-2xl font-bold text-white">
-                  ₦{filteredTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          <div className="col-right">
+            {expenses.length === 0 ? (
+              <div className="card zero-state">
+                <div className="zero-state-icon">📋</div>
+                <h2 className="zero-state-title">Track your spending</h2>
+                <p className="zero-state-text">
+                  Add your first expense using the form on the left. Your
+                  expenses are saved in this browser — no account needed.
                 </p>
               </div>
-              <div className="bg-[#1a1a24] border border-[#2a2a38] rounded-2xl p-5">
-                <p className="text-xs text-gray-400 uppercase tracking-wide mb-2">Transactions</p>
-                <p className="text-2xl font-bold text-white">{filtered.length}</p>
-              </div>
-            </div>
+            ) : (
+              <>
+                <FilterTabs value={filter} onChange={setFilter} />
 
-            {/* Charts row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-[#1a1a24] border border-[#2a2a38] rounded-2xl p-5">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4">Spending by Category</h3>
-                <CategoryChart expenses={filtered} />
-              </div>
-              <div className="bg-[#1a1a24] border border-[#2a2a38] rounded-2xl p-5">
-                <h3 className="text-sm font-semibold text-gray-300 mb-4">Last 7 Days</h3>
-                <DailyChart expenses={expenses} />
-              </div>
-            </div>
+                <div className="stats-row">
+                  <div className="card">
+                    <p className="stat-label">Total Spent</p>
+                    <p className="stat-value">{formatAmount(filteredTotal)}</p>
+                  </div>
+                  <div className="card">
+                    <p className="stat-label">Transactions</p>
+                    <p className="stat-value">{filtered.length}</p>
+                  </div>
+                </div>
 
-            {/* Expense list */}
-            <div className="bg-[#1a1a24] border border-[#2a2a38] rounded-2xl p-5">
-              <h3 className="text-sm font-semibold text-gray-300 mb-4">
-                Expenses
-                {filtered.length > 0 && (
-                  <span className="ml-2 text-xs text-gray-500 font-normal">{filtered.length} records</span>
-                )}
-              </h3>
-              <ExpenseList expenses={filtered} onDelete={deleteExpense} />
-            </div>
+                <div className="charts-row">
+                  <div className="card">
+                    <p className="chart-title">By Category</p>
+                    <CategoryChart expenses={filtered} />
+                  </div>
+                  <div className="card">
+                    <p className="chart-title">Last 7 Days (all expenses)</p>
+                    <DailyChart expenses={expenses} />
+                  </div>
+                </div>
+
+                <div className="card">
+                  <p className="list-heading">
+                    Expenses
+                    {filtered.length > 0 && (
+                      <span className="list-count">{filtered.length} records</span>
+                    )}
+                  </p>
+                  <ExpenseList expenses={filtered} onDelete={handleDelete} />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </main>
+
+      {undoItem && (
+        <div className="undo-toast">
+          <span>Expense deleted</span>
+          <button className="undo-btn" onClick={handleUndo}>Undo</button>
+        </div>
+      )}
     </div>
   );
 }

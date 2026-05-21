@@ -6,7 +6,6 @@ export interface Expense {
   amount: number;
   category: Category;
   date: string; // ISO date string YYYY-MM-DD
-  createdAt: number;
 }
 
 export const CATEGORIES: Category[] = ['food', 'transport', 'data', 'fun', 'other'];
@@ -26,3 +25,12 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   fun: 'Fun',
   other: 'Other',
 };
+
+export const CURRENCY = { symbol: '₦', locale: 'en-NG' } as const;
+
+export function formatAmount(amount: number): string {
+  return `${CURRENCY.symbol}${amount.toLocaleString(CURRENCY.locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}

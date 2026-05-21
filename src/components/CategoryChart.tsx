@@ -1,6 +1,6 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { Expense, Category } from '../types';
-import { CATEGORY_COLORS, CATEGORY_LABELS } from '../types';
+import { CATEGORY_COLORS, CATEGORY_LABELS, formatAmount } from '../types';
 
 interface Props {
   expenses: Expense[];
@@ -12,29 +12,31 @@ export default function CategoryChart({ expenses }: Props) {
     totals[e.category] = (totals[e.category] ?? 0) + e.amount;
   }
 
-  const data = Object.entries(totals).map(([cat, value]) => ({
-    name: CATEGORY_LABELS[cat as Category],
-    value: Math.round(value * 100) / 100,
-    color: CATEGORY_COLORS[cat as Category],
-  }));
+  const data = Object.entries(totals)
+    .filter(([cat]) => cat in CATEGORY_LABELS)
+    .map(([cat, value]) => ({
+      name: CATEGORY_LABELS[cat as Category],
+      value: Math.round((value ?? 0) * 100) / 100,
+      color: CATEGORY_COLORS[cat as Category],
+    }));
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-48 text-gray-500 text-sm">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 180, fontSize: 13, color: 'var(--text-3)' }}>
         No expenses yet
       </div>
     );
   }
 
   return (
-    <ResponsiveContainer width="100%" height={260}>
+    <ResponsiveContainer width="100%" height={240}>
       <PieChart>
         <Pie
           data={data}
           cx="50%"
           cy="50%"
-          innerRadius={65}
-          outerRadius={100}
+          innerRadius={60}
+          outerRadius={90}
           paddingAngle={3}
           dataKey="value"
         >
@@ -43,16 +45,21 @@ export default function CategoryChart({ expenses }: Props) {
           ))}
         </Pie>
         <Tooltip
-          formatter={(value) => [`₦${Number(value).toLocaleString()}`, '']}
+          formatter={(value) => [formatAmount(Number(value)), '']}
           contentStyle={{
-            background: '#1a1a24',
-            border: '1px solid #2a2a38',
-            borderRadius: '12px',
-            color: '#e2e2e8',
+            background: 'var(--surface-2)',
+            border: '1px solid var(--border-2)',
+            borderRadius: 10,
+            fontSize: 13,
+            color: 'var(--text)',
           }}
         />
         <Legend
-          formatter={(value) => <span style={{ color: '#9ca3af', fontSize: 13 }}>{value}</span>}
+          iconSize={8}
+          iconType="circle"
+          formatter={(value) => (
+            <span style={{ color: 'var(--text-2)', fontSize: 12 }}>{value}</span>
+          )}
         />
       </PieChart>
     </ResponsiveContainer>

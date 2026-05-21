@@ -14,6 +14,18 @@ function mondayOf(date: Date): Date {
   return d;
 }
 
+// Returns YYYY-MM-DD in local time (avoids the UTC shift from toISOString)
+function localDateString(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+export function localToday(): string {
+  return localDateString(new Date());
+}
+
 export function getFilterBounds(range: FilterRange): { from: Date | null; to: Date | null } {
   const today = new Date();
   if (range === 'all-time') return { from: null, to: null };
@@ -54,7 +66,7 @@ export function getLast7Days(): string[] {
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    days.push(d.toISOString().slice(0, 10));
+    days.push(localDateString(d));
   }
   return days;
 }

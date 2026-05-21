@@ -1,10 +1,10 @@
 import type { FilterRange } from '../types';
 
-const TABS: { label: string; value: FilterRange }[] = [
+const TABS = [
   { label: 'This Week', value: 'this-week' },
   { label: 'Last Week', value: 'last-week' },
-  { label: 'All Time', value: 'all-time' },
-];
+  { label: 'All Time',  value: 'all-time'  },
+] as const satisfies ReadonlyArray<{ label: string; value: FilterRange }>;
 
 interface Props {
   value: FilterRange;
@@ -13,16 +13,12 @@ interface Props {
 
 export default function FilterTabs({ value, onChange }: Props) {
   return (
-    <div className="flex gap-1 bg-[#1a1a24] border border-[#2a2a38] rounded-xl p-1">
+    <div className="filter-tabs">
       {TABS.map((tab) => (
         <button
           key={tab.value}
           onClick={() => onChange(tab.value)}
-          className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-            value === tab.value
-              ? 'bg-violet-600 text-white'
-              : 'text-gray-400 hover:text-gray-200'
-          }`}
+          className={`filter-tab${value === tab.value ? ' filter-tab-active' : ''}`}
         >
           {tab.label}
         </button>

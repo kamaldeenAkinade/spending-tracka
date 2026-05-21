@@ -1,0 +1,453 @@
+/* ─── Design tokens ─────────────────────────────── */
+:root {
+  --bg:          #0c0c0e;
+  --surface:     #131315;
+  --surface-2:   #1b1b1f;
+  --border:      #222226;
+  --border-2:    #2e2e34;
+  --focus:       #4e4e58;
+
+  --text:        #f0f0f2;
+  --text-2:      #84848e;
+  --text-3:      #42424c;
+
+  --radius-s:    8px;
+  --radius:      12px;
+  --radius-l:    16px;
+
+  --font: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* ─── Reset ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100svh;
+}
+
+/* ─── App shell ──────────────────────────────────── */
+.app { min-height: 100svh; }
+
+.app-header {
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+}
+
+.app-header-inner {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo { display: flex; align-items: center; gap: 10px; }
+
+.logo-mark {
+  width: 28px;
+  height: 28px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.logo-name { font-size: 15px; font-weight: 600; }
+
+.header-count { font-size: 12px; color: var(--text-3); }
+
+/* ─── Page layout ────────────────────────────────── */
+.app-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.app-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.col-left  { display: flex; flex-direction: column; gap: 14px; }
+.col-right { display: flex; flex-direction: column; gap: 14px; }
+
+/* ─── Card ───────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+  padding: 20px;
+}
+
+/* ─── Week total ─────────────────────────────────── */
+.week-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 8px;
+}
+
+.week-amount {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+}
+
+/* ─── Form ───────────────────────────────────────── */
+.form-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+.form { display: flex; flex-direction: column; gap: 14px; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+
+.field-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.input-wrap { position: relative; }
+
+.input-prefix {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 13px;
+  font-size: 14px;
+  color: var(--text);
+  font-family: var(--font);
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.input-with-prefix { padding-left: 28px; }
+.input:focus { border-color: var(--focus); }
+.input::placeholder { color: var(--text-3); }
+.input[type='number']::-webkit-inner-spin-button,
+.input[type='number']::-webkit-outer-spin-button { -webkit-appearance: none; }
+.input[type='date']::-webkit-calendar-picker-indicator { filter: invert(0.4); cursor: pointer; }
+
+/* ─── Category pills ─────────────────────────────── */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.cat-btn {
+  padding: 8px 2px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-2);
+  font-family: var(--font);
+  transition: border-color 0.15s, color 0.15s;
+}
+.cat-btn:hover { border-color: var(--border-2); color: var(--text); }
+.cat-btn-active { color: #fff; border-color: transparent; }
+
+/* ─── Submit ─────────────────────────────────────── */
+.btn-primary {
+  width: 100%;
+  padding: 11px;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: opacity 0.15s;
+  margin-top: 2px;
+}
+.btn-primary:hover { opacity: 0.86; }
+
+.form-error { font-size: 12px; color: #f87171; }
+
+/* ─── Filter tabs ────────────────────────────────── */
+.filter-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 3px;
+}
+
+.filter-tab {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: color 0.15s, background 0.15s;
+}
+.filter-tab:hover { color: var(--text); }
+.filter-tab-active {
+  background: var(--surface-2);
+  border-color: var(--border-2);
+  color: var(--text);
+}
+
+/* ─── Stats ──────────────────────────────────────── */
+.stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.stat-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+/* ─── Charts row ─────────────────────────────────── */
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.chart-title {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+}
+
+/* ─── Expense list ───────────────────────────────── */
+.list-heading {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.list-count { font-weight: 400; color: var(--text-3); margin-left: 6px; }
+
+.expense-list { display: flex; flex-direction: column; gap: 6px; }
+
+.expense-empty {
+  text-align: center;
+  padding: 28px 0;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.expense-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+}
+
+.expense-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.expense-badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.expense-date {
+  font-size: 12px;
+  color: var(--text-2);
+  flex-shrink: 0;
+}
+
+.expense-amount {
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.expense-delete {
+  margin-left: 6px;
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 3px 5px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s, background 0.15s;
+}
+.expense-row:hover .expense-delete { opacity: 1; }
+.expense-delete:hover { color: #f87171; background: rgba(248,113,113,0.1); }
+
+/* ─── Header actions ────────────────────────────── */
+.header-actions { display: flex; align-items: center; gap: 10px; }
+
+/* ─── Zero state ────────────────────────────────── */
+.zero-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 64px 32px;
+  gap: 12px;
+}
+
+.zero-state-icon { font-size: 40px; }
+
+.zero-state-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.zero-state-text {
+  font-size: 13px;
+  color: var(--text-2);
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* ─── Export button ─────────────────────────────── */
+.btn-export {
+  padding: 5px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: color 0.15s, border-color 0.15s;
+}
+.btn-export:hover { color: var(--text); border-color: var(--focus); }
+
+/* ─── Save error banner ─────────────────────────── */
+.save-error-banner {
+  background: #7f1d1d;
+  color: #fca5a5;
+  font-size: 13px;
+  text-align: center;
+  padding: 8px 16px;
+}
+
+/* ─── Undo toast ────────────────────────────────── */
+.undo-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  font-size: 13px;
+  color: var(--text-2);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  z-index: 100;
+}
+
+.undo-btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  padding: 0;
+}
+.undo-btn:hover { opacity: 0.7; }
+
+/* ─── Disabled submit ───────────────────────────── */
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ─── Error boundary ────────────────────────────── */
+.error-boundary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100svh;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+}
+.error-boundary-title { font-size: 16px; color: var(--text); }
+.error-boundary-sub   { font-size: 13px; color: var(--text-3); }
+.error-boundary-btn   { width: auto; margin-top: 8px; }
+
+/* ─── Responsive ─────────────────────────────────── */
+@media (max-width: 860px) {
+  .app-grid { grid-template-columns: 1fr; }
+  .app-main { padding: 20px 16px 48px; }
+  .charts-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .cat-grid { grid-template-columns: repeat(5, 1fr); }
+  .cat-btn { font-size: 10px; padding: 7px 1px; }
+  .week-amount { font-size: 24px; }
+}
