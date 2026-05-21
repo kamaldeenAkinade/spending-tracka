@@ -9,6 +9,8 @@ import FilterTabs from './components/FilterTabs';
 import type { Expense, FilterRange } from './types';
 import { formatAmount } from './format';
 import { useTheme } from './useTheme';
+import { exportJSON, exportCSV, exportTXT, exportPDF } from './export';
+import type { ExportFormat } from './export';
 
 export default function App() {
   const { expenses, addExpense, deleteExpense, restoreExpense, saveError } = useExpenses();
@@ -16,6 +18,8 @@ export default function App() {
   const [undoItem, setUndoItem] = useState<Expense | null>(null);
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [light, toggleTheme] = useTheme();
+  const [exportOpen, setExportOpen] = useState(false);
+  const exportRef = useRef<HTMLDivElement | null>(null);
 
   const filtered = useMemo(
     () => filterExpensesByRange(expenses, filter),
@@ -51,14 +55,21 @@ export default function App() {
 
   useEffect(() => () => { if (undoTimer.current) clearTimeout(undoTimer.current); }, []);
 
-  function handleExport() {
-    const blob = new Blob([JSON.stringify(expenses, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `receipts-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+  useEffect(() => {
+    if (!exportOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
+        setExportOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [exportOpen]);
+
+  function handleExport(fmt: ExportFormat) {
+    setExportOpen(false);
+    const exporters = { json: exportJSON, csv: exportCSV, txt: exportTXT, pdf: exportPDF };
+    exporters[fmt](expenses);
   }
 
   return (
@@ -83,7 +94,19 @@ export default function App() {
               {expenses.length} expense{expenses.length !== 1 ? 's' : ''}
             </span>
             {expenses.length > 0 && (
-              <button className="btn-export" onClick={handleExport}>Export</button>
+              <div className="export-wrap" ref={exportRef}>
+                <button className="btn-export" onClick={() => setExportOpen((p) => !p)}>
+                  Export ▾
+                </button>
+                {exportOpen && (
+                  <div className="export-dropdown">
+                    <button onClick={() => handleExport('json')}>JSON</button>
+                    <button onClick={() => handleExport('csv')}>CSV</button>
+                    <button onClick={() => handleExport('txt')}>TXT</button>
+                    <button onClick={() => handleExport('pdf')}>PDF</button>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
