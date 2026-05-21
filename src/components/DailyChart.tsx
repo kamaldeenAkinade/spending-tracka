@@ -1,6 +1,7 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import type { Expense } from '../types';
-import { CURRENCY, formatAmount } from '../types';
+import { CURRENCY } from '../constants';
+import { formatAmount } from '../format';
 import { getLast7Days, formatShortDate, localToday } from '../dateUtils';
 
 const BAR_DEFAULT = '#2a2a30';

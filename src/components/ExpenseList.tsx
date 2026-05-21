@@ -1,7 +1,8 @@
 import { FixedSizeList } from 'react-window';
 import type { ListChildComponentProps } from 'react-window';
 import type { Expense } from '../types';
-import { CATEGORY_COLORS, CATEGORY_LABELS, formatAmount } from '../types';
+import { CATEGORY_COLORS, CATEGORY_LABELS } from '../constants';
+import { formatAmount } from '../format';
 import { formatDisplayDate } from '../dateUtils';
 
 const ROW_HEIGHT = 50;

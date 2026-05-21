@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Category } from '../types';
-import { CATEGORIES, CATEGORY_LABELS, CATEGORY_COLORS, CURRENCY } from '../types';
+import { CATEGORIES, CATEGORY_LABELS, CATEGORY_COLORS, CURRENCY } from '../constants';
 import { localToday } from '../dateUtils';
 
 interface Props {

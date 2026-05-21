@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { Expense } from './types';
-import { CATEGORIES } from './types';
+import { CATEGORIES } from './constants';
 
 const STORAGE_KEY = 'receipts_expenses';
 

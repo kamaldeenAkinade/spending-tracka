@@ -1,6 +1,7 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { Expense, Category } from '../types';
-import { CATEGORY_COLORS, CATEGORY_LABELS, formatAmount } from '../types';
+import { CATEGORY_COLORS, CATEGORY_LABELS } from '../constants';
+import { formatAmount } from '../format';
 
 interface Props {
   expenses: Expense[];
