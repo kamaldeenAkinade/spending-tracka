@@ -1,4 +1,4 @@
-/* ─── Design tokens ─────────────────────────────── */
+/* ─── Design tokens (dark) ──────────────────────── */
 :root {
   --bg:          #0c0c0e;
   --surface:     #131315;
@@ -16,6 +16,20 @@
   --radius-l:    16px;
 
   --font: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* ─── Design tokens (light) ─────────────────────── */
+.light {
+  --bg:          #f2f2f5;
+  --surface:     #ffffff;
+  --surface-2:   #ebebef;
+  --border:      #e0e0e5;
+  --border-2:    #d0d0d6;
+  --focus:       #a0a0aa;
+
+  --text:        #1c1c1e;
+  --text-2:      #6b6b76;
+  --text-3:      #9e9ea8;
 }
 
 /* ─── Reset ─────────────────────────────────────── */
@@ -160,7 +174,8 @@ body {
 .input::placeholder { color: var(--text-3); }
 .input[type='number']::-webkit-inner-spin-button,
 .input[type='number']::-webkit-outer-spin-button { -webkit-appearance: none; }
-.input[type='date']::-webkit-calendar-picker-indicator { filter: invert(0.4); cursor: pointer; }
+.input[type='date']::-webkit-calendar-picker-indicator { cursor: pointer; filter: invert(0.4); }
+.light .input[type='date']::-webkit-calendar-picker-indicator { filter: invert(0.8); }
 
 /* ─── Category pills ─────────────────────────────── */
 .cat-grid {
@@ -381,6 +396,26 @@ body {
 }
 .btn-export:hover { color: var(--text); border-color: var(--focus); }
 
+/* ─── Theme toggle ──────────────────────────────── */
+.btn-theme {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  font-size: 15px;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: color 0.15s, border-color 0.15s;
+  padding: 0;
+  line-height: 1;
+}
+.btn-theme:hover { color: var(--text); border-color: var(--focus); }
+
 /* ─── Save error banner ─────────────────────────── */
 .save-error-banner {
   background: #7f1d1d;
@@ -450,4 +485,9 @@ body {
   .cat-grid { grid-template-columns: repeat(5, 1fr); }
   .cat-btn { font-size: 10px; padding: 7px 1px; }
   .week-amount { font-size: 24px; }
+}
+
+@media (max-width: 400px) {
+  .header-count { display: none; }
+  .app-header { padding: 0 12px; }
 }

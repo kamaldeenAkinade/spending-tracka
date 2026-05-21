@@ -9,11 +9,28 @@ import FilterTabs from './components/FilterTabs';
 import type { Expense, FilterRange } from './types';
 import { formatAmount } from './types';
 
+const THEME_KEY = 'receipts_theme';
+
+function getInitialTheme(): boolean {
+  try {
+    const stored = localStorage.getItem(THEME_KEY);
+    if (stored !== null) return stored === 'light';
+  } catch {}
+  if (window.matchMedia('(prefers-color-scheme: dark)').matches) return false;
+  return true;
+}
+
 export default function App() {
   const { expenses, addExpense, deleteExpense, restoreExpense, saveError } = useExpenses();
   const [filter, setFilter] = useState<FilterRange>('this-week');
   const [undoItem, setUndoItem] = useState<Expense | null>(null);
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [light, setLight] = useState(getInitialTheme);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('light', light);
+    try { localStorage.setItem(THEME_KEY, light ? 'light' : 'dark'); } catch {}
+  }, [light]);
 
   const filtered = useMemo(
     () => filterExpensesByRange(expenses, filter),
@@ -70,10 +87,13 @@ export default function App() {
       <header className="app-header">
         <div className="app-header-inner">
           <div className="logo">
-            <div className="logo-mark">R</div>
-            <span className="logo-name">Receipts</span>
+            <div className="logo-mark">S</div>
+            <span className="logo-name">spending-tracka</span>
           </div>
           <div className="header-actions">
+            <button className="btn-theme" onClick={() => setLight((p) => !p)} title="Toggle theme">
+              {light ? '🌙' : '☀️'}
+            </button>
             <span className="header-count">
               {expenses.length} expense{expenses.length !== 1 ? 's' : ''}
             </span>
